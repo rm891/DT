@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>누리 아카데미</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{--dev:#ff9ec7;--dk:color-mix(in srgb,var(--dev),#000 28%);--bg:#fff6fb;--ink:#5b4a6e}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;color:var(--ink);font-family:'Gowun Dodum',system-ui,sans-serif;background:#cfd6ff url(assets/bg/page_bg.png) center/cover no-repeat;image-rendering:pixelated}
+.stage{min-height:100%;display:flex;align-items:center;justify-content:center;padding:2vmin}
+.frame{width:min(100%,calc((100vh - 4vmin)*16/9));aspect-ratio:16/9;background:rgba(255,255,255,.38);border:2px solid rgba(255,255,255,.8);border-radius:22px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);box-shadow:0 8px 30px rgba(120,100,170,.25);display:flex;align-items:center;justify-content:center}
+.screen{width:93%;aspect-ratio:16/9;position:relative;border-radius:12px;overflow:hidden;border:3px solid #7c6a9c;background:#e8e0ff url(assets/bg/title_bg.png) center/cover no-repeat;image-rendering:pixelated;container-type:inline-size}
+.screen.dim::before{content:'';position:absolute;inset:0;background:rgba(255,246,251,.55)}
+main{position:absolute;inset:0;overflow-y:auto;padding:14px;display:grid;gap:14px;align-content:start;justify-items:center}
+main>*{width:100%;max-width:420px}
+main.t{align-content:space-between;padding:3cqw}main.t>*{max-width:none}
+.logo{text-align:center}
+.lg{font-size:8cqw;line-height:1.1;color:#ff8fbf;text-shadow:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff,3px 3px #fff,-3px -3px #fff,3px -3px #fff,-3px 3px #fff,0 6px #b98ad8,3px 6px #b98ad8,-3px 6px #b98ad8}
+.sub{display:inline-block;margin-top:1.4cqw;font-size:2.2cqw;color:#7c6a9c;background:rgba(255,255,255,.75);padding:.5cqw 2.4cqw;border-radius:99px}
+.start{text-align:center}
+#startBtn{font-size:3cqw;padding:.8cqw 5cqw;border-radius:99px;background:#ff9ec7;color:#fff;border:3px solid #fff;box-shadow:0 .6cqw 0 #c76a98;text-shadow:0 2px 0 #c76a98}
+@media (max-aspect-ratio:1/1){.frame{aspect-ratio:auto;height:96vh;width:100%}.screen{aspect-ratio:auto;height:94%}}
+h1{margin:0;font-size:22px;text-align:center}
+.card{background:#fff;border:3px solid var(--dk);border-radius:16px;padding:12px;box-shadow:0 4px 0 var(--dk)}
+.device{background:color-mix(in srgb,var(--dev),#fff 60%);text-align:center}
+.say{background:#fffbe8;border-color:#e0c36a;box-shadow:0 4px 0 #e0c36a;font-size:14px;line-height:1.5}
+.lcd{background:#d9ecc8;border:4px solid var(--dk);border-radius:10px;padding:8px;box-shadow:inset 0 0 0 3px #c4dbb0}
+canvas{image-rendering:pixelated;display:block;margin:0 auto}
+#hEgg,#nMon{width:176px;height:176px}
+#main,#devIntro{width:min(100%,300px);height:auto;aspect-ratio:1/1}
+.bars{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;margin:8px 0;font-size:13px;text-align:left}
+progress{width:100%;height:12px}
+button,select,input[type=text]{font:inherit;background:#fff;border:2px solid var(--dk);border-radius:10px;padding:6px 10px;color:var(--ink)}
+button,select{cursor:pointer;box-shadow:0 2px 0 var(--dk)}
+button:active{transform:translateY(2px);box-shadow:none}
+button:disabled{opacity:.45}
+.row{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.slot{text-align:center;font-size:12px;cursor:pointer;padding:4px;border-radius:10px;border:2px dashed transparent}
+.slot.lead{border-color:var(--dk);background:#fff0f7}
+.slot canvas{width:72px;height:72px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;text-align:center;font-size:12px}
+.grid canvas{width:64px;height:64px}
+.grid .un canvas{filter:brightness(0) opacity(.25)}
+.egg{cursor:pointer;padding:4px;border-radius:10px;border:2px solid transparent}
+.egg.sel{border-color:var(--dk);background:#fff0f7}
+#room{width:100%;max-width:384px;height:auto;aspect-ratio:5/3;border-radius:10px;border:2px solid var(--dk)}
+input[type=range]{width:100%}
+#msg{min-height:20px;margin:6px 0 0;font-size:13px}
+small{color:#8d7ba0}
+</style></head><body><div class="stage"><div class="frame"><div class="screen"><main>
+<section class="logo" data-p="title"><div class="lg">누리 아카데미</div><div class="sub">✿ 알에서 시작하는 파트너 이야기 ✿</div></section>
+<section class="start" data-p="title"><button id="startBtn">▶ 시작하기</button></section>
+<h1 data-p="intro egg hatch name hub">✿ 누리 아카데미 ✿</h1>
+<section class="card say" id="say" data-p="intro egg hatch name hub"></section>
+
+<!-- 1. 입학식 -->
+<section class="card" data-p="intro">
+  <canvas id="devIntro" width="112" height="112"></canvas>
+  <b>이름</b> <input type="text" id="pname" maxlength="8" placeholder="신입생">
+  <div style="margin-top:10px"><b>내 디바이스 색상</b></div>
+  <label>R <input type="range" class="cx" id="cr" min="0" max="255"></label>
+  <label>G <input type="range" class="cx" id="cg" min="0" max="255"></label>
+  <label>B <input type="range" class="cx" id="cb" min="0" max="255"></label>
+  <div class="row"><button id="toEgg">입학하기 ▶</button></div>
+</section>
+
+<!-- 2. 알 고르기 -->
+<section class="card" data-p="egg">
+  <div class="grid" id="eggs"></div>
+  <div class="row"><button id="pick" disabled>이 알로 할래요</button><button id="rand">🎲 마음에 드는 게 없어요 (랜덤 알)</button></div>
+</section>
+
+<!-- 3. 부화 -->
+<section class="card device" data-p="hatch">
+  <div class="lcd"><canvas id="hEgg" width="32" height="32"></canvas></div>
+  <progress id="warm" max="8" value="0" style="margin-top:8px"></progress>
+  <div class="row"><button id="touch">🤲 따뜻하게 해주기</button></div>
+</section>
+
+<!-- 4. 이름 짓기 -->
+<section class="card device" data-p="name">
+  <div class="lcd"><canvas id="nMon" width="32" height="32"></canvas></div>
+  <div class="row"><input type="text" id="nick" maxlength="8"><button id="nameOk">정했어요</button></div>
+</section>
+
+<!-- 5. 아카데미 -->
+<section class="card device" data-p="hub">
+  <canvas id="main" width="112" height="112"></canvas>
+  <div id="name" style="margin-top:8px;font-weight:bold"></div>
+  <div class="bars"><span>배고픔</span><progress id="bHun" max="100"></progress><span>기분</span><progress id="bJoy" max="100"></progress><span>훈련</span><progress id="bTr" max="100"></progress></div>
+  <div class="row"><button id="eat">🍙 먹이</button><button id="train">💪 훈련</button><button id="evo">✨ 진화</button></div>
+  <p id="msg"></p>
+</section>
+<section class="card" data-p="hub"><b>파트너</b> <small>(눌러서 대표 교체)</small><div id="party" class="row"></div></section>
+<section class="card" data-p="hub"><b>교정 (미리보기)</b> <small>방향키/WASD</small>
+  <canvas id="room" width="160" height="96"></canvas>
+  <div class="row"><button data-d="up">▲</button><button data-d="left">◀</button><button data-d="down">▼</button><button data-d="right">▶</button></div>
+</section>
+<section class="card" data-p="hub"><b>도감</b><div id="dex" class="grid"></div></section>
+<section class="card" data-p="hub"><b>내 스프라이트 넣기</b><br><small>알 128×32 / 몬스터 64×32 / 플레이어 96×128 PNG (이 브라우저에만 저장)</small>
+  <div class="row"><select id="target"></select><input type="file" id="up" accept="image/png"></div>
+  <div class="row"><button id="reset">선택한 스프라이트 초기화</button><button id="wipe">처음부터 다시</button></div>
+</section>
+</main></div></div></div>
+<script>
+const $=s=>document.querySelector(s);
+const LINES=[
+{egg:'별무늬 알',hue:48,n:['반짝이','별똥이','스텔라']},
+{egg:'구름 알',hue:200,n:['몽글이','뭉게','클라우디']},
+{egg:'물방울 알',hue:185,n:['퐁이','물결이','파도리']},
+{egg:'잎사귀 알',hue:120,n:['새싹이','풀잎이','숲지기']},
+{egg:'불꽃 알',hue:12,n:['불씨','불꽃이','화염이']},
+{egg:'달 알',hue:270,n:['달콩이','달토리','루나돌']}];
+const STAGES=['유아기','성장기','성숙기'],NEED=[3,6];
+const SP=[];LINES.forEach((l,i)=>l.n.forEach((n,j)=>SP.push({id:'m'+String(i*3+j+1).padStart(3,'0'),name:n,stage:STAGES[j],j,line:i,need:j<2?NEED[j]:0,to:j<2?'m'+String(i*3+j+2).padStart(3,'0'):null})));
+const byId=id=>SP.find(s=>s.id===id);
+let S=null;try{S=JSON.parse(localStorage.getItem('pixelpals2'))}catch(e){}
+S=S||{phase:'intro',name:'',color:'#ff9ec7',egg:null,taps:0,party:[null,null,null],dex:{},custom:{}};
+const save=()=>{try{localStorage.setItem('pixelpals2',JSON.stringify(S))}catch(e){}};
+const msg=t=>$('#msg').textContent=t;
+let sel=null,tick=0,showTitle=true;
+
+// ---- 스프라이트 (PNG 없으면 임시 도트) ----
+const IM={};
+function getImg(key,path){const src=S.custom[key]||path;let o=IM[key];
+  if(!o||o.s!==src){o=IM[key]={s:src,ok:false,i:new Image()};o.i.onload=()=>{o.ok=true;render()};o.i.src=src}return o}
+function phMon(c,sp,f){const h=LINES[sp.line].hue,y=f?1:0,j=sp.j;
+  c.fillStyle=`hsl(${h} 70% 78%)`;c.fillRect(8,10+y,16,14-y);c.fillRect(10,8+y,12,2);c.fillRect(10,24,12,2);
+  if(j>=1){c.fillRect(8,5+y,3,4);c.fillRect(21,5+y,3,4)}
+  if(j==2){c.fillStyle=`hsl(${h} 60% 55%)`;c.fillRect(15,3+y,2,5)}
+  c.fillStyle=`hsl(${h} 50% 40%)`;c.fillRect(12,14+y,2,3);c.fillRect(19,14+y,2,3);c.fillRect(15,19+y,3,1)}
+function phEgg(c,i,f){const h=LINES[i].hue,x=tick%2;
+  c.fillStyle=`hsl(${h} 70% 85%)`;c.fillRect(10+x,8,12,18);c.fillRect(8+x,12,16,10);c.fillRect(12+x,6,8,2);c.fillRect(12+x,26,8,1);
+  c.fillStyle=`hsl(${h} 60% 62%)`;[[12,12],[18,15],[13,20],[19,22]].forEach(([a,b])=>c.fillRect(a+x,b,3,3));
+  if(f>=2){c.fillStyle='#5b4a6e';c.fillRect(15+x,9,2,2);c.fillRect(17+x,11,2,2);c.fillRect(15+x,13,2,2);
+    if(f==3){c.fillRect(13+x,15,2,2);c.fillRect(19+x,17,2,2)}}}
+function drawMonCtx(c,id,f,x,y){const o=getImg(id,`assets/monsters/${id}.png`);
+  if(o.ok)c.drawImage(o.i,f*32,0,32,32,x,y,32,32);else{c.save();c.translate(x,y);phMon(c,byId(id),f);c.restore()}}
+function drawMon(cv,id,f){const c=cv.getContext('2d');c.clearRect(0,0,32,32);drawMonCtx(c,id,f,0,0)}
+function drawEgg(cv,i,f){const c=cv.getContext('2d');c.clearRect(0,0,32,32);
+  const o=getImg('egg'+i,`assets/eggs/e${i+1}.png`);if(o.ok)c.drawImage(o.i,f*32,0,32,32,0,0,32,32);else phEgg(c,i,f)}
+function drawPlayer(c,x,y,dir,f){const o=getImg('player','assets/player/player.png');
+  if(o.ok){c.drawImage(o.i,f*32,dir*32,32,32,x,y,32,32);return}
+  c.fillStyle='#ffe0c8';c.fillRect(x+10,y+6,12,10);c.fillStyle=S.color;c.fillRect(x+10,y+16,12,9);
+  c.fillStyle='#5b4a6e';c.fillRect(x+10,y+4,12,3);if(dir!=3){c.fillRect(x+13,y+10,2,2);c.fillRect(x+18,y+10,2,2)}
+  c.fillRect(x+11,y+25,4,f==1?4:3);c.fillRect(x+17,y+25,4,f==2?4:3)}
+
+// ---- 디바이스: 껍데기(흑백 명암)에 RGB 색을 입힘 ----
+const TC={};
+function tinted(){const o=getImg('devShell','assets/device/device_shell.png');if(!o.ok)return null;
+  const key=S.color+o.s;if(TC.k===key)return TC.cv;
+  const w=o.i.width,h=o.i.height,cv=document.createElement('canvas');cv.width=w;cv.height=h;const c=cv.getContext('2d');c.drawImage(o.i,0,0);
+  try{const im=c.getImageData(0,0,w,h),d=im.data,C=[1,3,5].map(i=>parseInt(S.color.slice(i,i+2),16));
+    const D=C.map(v=>v*.42),W=C.map(v=>v+(255-v)*.8);
+    for(let i=0;i<d.length;i+=4){if(!d[i+3])continue;const t=d[i]/255;
+      for(let k=0;k<3;k++)d[i+k]=t<.8?D[k]+(C[k]-D[k])*(t/.8):C[k]+(W[k]-C[k])*((t-.8)/.2)}
+    c.putImageData(im,0,0)}
+  catch(e){c.globalCompositeOperation='multiply';c.fillStyle=S.color;c.fillRect(0,0,w,h);c.globalCompositeOperation='destination-in';c.drawImage(o.i,0,0)}
+  TC.k=key;TC.cv=cv;return cv}
+function drawDevice(cv,id,f){const c=cv.getContext('2d');c.clearRect(0,0,112,112);
+  const sh=tinted();if(sh)c.drawImage(sh,0,0);
+  c.fillStyle='#d8ecc8';c.fillRect(32,28,48,48);c.fillStyle='rgba(110,150,100,.10)';for(let y=28;y<76;y+=2)c.fillRect(32,y,48,1);
+  if(id)drawMonCtx(c,id,f,40,36);else{c.fillStyle='#8fb480';[[56,48],[55,49],[56,49],[57,49],[56,50],[56,58],[55,59],[57,59]].forEach(([x,y])=>c.fillRect(x,y,1,1))}
+  const fx=getImg('devFixed','assets/device/device_fixed.png');if(fx.ok)c.drawImage(fx.i,0,0)}
+// ---- 화면 구성 (한 번만) ----
+const mkCv=()=>{const c=document.createElement('canvas');c.width=c.height=32;return c};
+LINES.forEach((l,i)=>{const d=document.createElement('div');d.className='egg';d.append(mkCv());d.append(l.egg);
+  d.onclick=()=>{sel=i;$('#pick').disabled=false;render()};$('#eggs').append(d)});
+['대표','교체1','교체2'].forEach((l,i)=>{const d=document.createElement('div');d.className='slot';d.append(mkCv());d.append(l);
+  d.onclick=()=>{if(i&&S.party[i]){[S.party[0],S.party[i]]=[S.party[i],S.party[0]];save();msg('대표를 바꿨어요!');render()}};$('#party').append(d)});
+SP.forEach(s=>{const d=document.createElement('div');d.id='d'+s.id;d.append(mkCv());d.append(document.createElement('div'));$('#dex').append(d)});
+const tg=$('#target');tg.innerHTML='<option value="player">플레이어 (96×128)</option>'+LINES.map((l,i)=>`<option value="egg${i}">${l.egg} (128×32)</option>`).join('')+SP.map(s=>`<option value="${s.id}">${s.name} (64×32)</option>`).join('');
+
+const SAY={intro:'누리 아카데미에 입학한 걸 환영해요! 먼저 이름과 네 디바이스 색을 정해볼까요?',
+ egg:'입학 선물로 알을 하나 줄게요. 마음에 드는 알을 골라보세요. 못 고르겠으면 랜덤 알도 좋아요!',
+ hatch:'알이 따뜻함을 느끼고 있어요. 조심조심 만져주세요…',
+ name:'와, 태어났어요! 이 아이의 이름을 지어주세요.',
+ hub:'이제 너의 파트너예요. 먹이를 주고 훈련을 하며 함께 성장해보세요!'};
+
+function render(){
+  document.documentElement.style.setProperty('--dev',S.color);
+  const ph=showTitle?'title':S.phase;
+  document.querySelectorAll('[data-p]').forEach(e=>e.hidden=!e.dataset.p.split(' ').includes(ph));
+  $('main').classList.toggle('t',ph==='title');$('.screen').classList.toggle('dim',ph!=='title');
+  $('#startBtn').textContent=S.phase==='intro'?'▶ 시작하기':'▶ 이어하기';
+  if(ph==='title')return;
+  $('#say').textContent=SAY[S.phase];
+  const f=tick%2;
+  if(ph==='intro')drawDevice($('#devIntro'),null,f);
+  if(ph==='egg'){[...$('#eggs').children].forEach((d,i)=>{d.classList.toggle('sel',sel===i);drawEgg(d.firstChild,i,f)})}
+  if(ph==='hatch'){drawEgg($('#hEgg'),S.egg,S.taps>=6?3:S.taps>=3?2:f);$('#warm').value=S.taps}
+  if(ph==='name')drawMon($('#nMon'),SP[S.egg*3].id,f);
+  if(ph!=='hub')return;
+  const p=S.party[0],sp=byId(p.id);
+  drawDevice($('#main'),p.id,f);
+  $('#name').textContent=`${p.nick} (${sp.name}) · ${sp.stage}`;
+  $('#bHun').value=p.hun;$('#bJoy').value=p.joy;$('#bTr').value=sp.to?Math.min(100,p.tr/sp.need*100):100;
+  $('#evo').disabled=!(sp.to&&p.tr>=sp.need);
+  [...$('#party').children].forEach((d,i)=>{const m=S.party[i];d.classList.toggle('lead',i==0);
+    const c=d.firstChild.getContext('2d');if(m)drawMon(d.firstChild,m.id,f);else{c.clearRect(0,0,32,32);c.fillStyle='#e6dcee';c.fillRect(14,14,4,4)}});
+  SP.forEach(s=>{const d=$('#d'+s.id),own=S.dex[s.id];d.className=own?'':'un';d.lastChild.textContent=own?s.name:'???';drawMon(d.firstChild,s.id,f)});
+  const c=$('#room').getContext('2d');
+  for(let y=0;y<6;y++)for(let x=0;x<10;x++){c.fillStyle=(x+y)%2?'#ffeaf4':'#fff6fb';c.fillRect(x*16,y*16,16,16)}
+  drawPlayer(c,px,py,dir,moving?1+(tick%2):0);
+}
+$('#startBtn').onclick=()=>{showTitle=false;render()};
+// ---- 입학식 ----
+const hex=(r,g,b)=>'#'+[r,g,b].map(v=>(+v).toString(16).padStart(2,'0')).join('');
+['cr','cg','cb'].forEach((id,i)=>$('#'+id).value=parseInt(S.color.slice(1+i*2,3+i*2),16));
+document.querySelectorAll('.cx').forEach(e=>e.oninput=()=>{S.color=hex($('#cr').value,$('#cg').value,$('#cb').value);save();render()});
+$('#pname').value=S.name;
+$('#toEgg').onclick=()=>{S.name=$('#pname').value.trim()||'신입생';S.phase='egg';save();render()};
+// ---- 알 고르기 / 부화 ----
+const startHatch=i=>{S.egg=i;S.taps=0;S.phase='hatch';save();render()};
+$('#pick').onclick=()=>{if(sel!==null)startHatch(sel)};
+$('#rand').onclick=()=>startHatch(Math.floor(Math.random()*LINES.length));
+$('#touch').onclick=()=>{S.taps++;if(S.taps>=8){S.phase='name';$('#nick').value=SP[S.egg*3].name}save();render()};
+$('#nameOk').onclick=()=>{const s=SP[S.egg*3];S.party[0]={id:s.id,nick:$('#nick').value.trim()||s.name,hun:70,joy:70,tr:0};S.dex[s.id]=1;S.phase='hub';save();render()};
+// ---- 아카데미 ----
+$('#eat').onclick=()=>{const p=S.party[0];p.hun=Math.min(100,p.hun+30);p.joy=Math.min(100,p.joy+3);msg('냠냠! 맛있게 먹었어요.');save();render()};
+$('#train').onclick=()=>{const p=S.party[0];if(p.hun<15){msg('배고파서 훈련할 수 없어요…');return}
+  p.hun-=15;p.joy=Math.min(100,p.joy+5);p.tr++;msg('영차영차! 훈련 완료!');save();render()};
+$('#evo').onclick=()=>{const p=S.party[0],sp=byId(p.id);p.id=sp.to;p.tr=0;S.dex[p.id]=1;msg(`${p.nick}이(가) ${byId(p.id).name}(으)로 진화했어요!`);save();render()};
+let px=64,py=40,dir=0,moving=0;
+const V={up:[0,-4,3],down:[0,4,0],left:[-4,0,1],right:[4,0,2]};
+function go(d){const[v,w,r]=V[d];px=Math.max(0,Math.min(128,px+v));py=Math.max(0,Math.min(64,py+w));dir=r;moving=1;clearTimeout(go.t);go.t=setTimeout(()=>{moving=0;render()},300);render()}
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>go(b.dataset.d));
+addEventListener('keydown',e=>{if(S.phase!=='hub'||e.target.tagName==='INPUT')return;const m={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'}[e.key];if(m){e.preventDefault();go(m)}});
+// ---- 스프라이트 업로드 ----
+$('#up').onchange=e=>{const f=e.target.files[0];if(!f)return;const k=tg.value,r=new FileReader();
+  r.onload=()=>{const t=new Image();t.onload=()=>{const[w,h]=k==='player'?[96,128]:k.startsWith('egg')?[128,32]:[64,32];
+    if(t.width!==w||t.height!==h){msg(`크기가 안 맞아요! ${w}×${h}px 필요 (지금 ${t.width}×${t.height})`);return}
+    S.custom[k]=r.result;save();msg('스프라이트 적용 완료!');render()};t.src=r.result};r.readAsDataURL(f);e.target.value=''};
+$('#reset').onclick=()=>{delete S.custom[tg.value];save();msg('초기화했어요.');render()};
+$('#wipe').onclick=()=>{if(confirm('저장 데이터를 지우고 처음부터 시작할까요?')){try{localStorage.removeItem('pixelpals2')}catch(e){}location.reload()}};
+
+setInterval(()=>{tick++;render()},450);
+setInterval(()=>{S.party.forEach(p=>{if(p)p.hun=Math.max(0,p.hun-1)});save()},10000);
+render();
+</script></body></html>
